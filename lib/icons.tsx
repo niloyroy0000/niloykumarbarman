@@ -107,6 +107,7 @@ export const FaLinkedinIn = createIcon("fa-brands:linkedin-in");
 export const FaStackOverflow = createIcon("fa-brands:stack-overflow");
 export const FaMedium = createIcon("fa-brands:medium");
 
+
 // Development & Code
 export const FaCode = createIcon("fa-solid:code");
 export const FaCodeBranch = createIcon("fa-solid:code-branch");
