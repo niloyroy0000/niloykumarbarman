@@ -1,4 +1,4 @@
-# Biswajit Panday - Portfolio Website
+# Niloy Kumar Barman - Portfolio Website
 
 A modern, responsive portfolio website built with Next.js 15, TypeScript, and Tailwind CSS, featuring glassmorphism design, smooth animations, and comprehensive image optimization.
 
