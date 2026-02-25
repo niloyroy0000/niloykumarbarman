@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Professional portfolio of Biswajit Panday, a Full-Stack .NET Developer with expertise in React, Azure, and AWS cloud solutions.",
+  "description": "Professional portfolio of Niloy Kumar Barman Panday, a Full-Stack .NET Developer with expertise in React, Azure, and AWS cloud solutions.",
   "keywords": [
     "full-stack developer",
     ".net developer",
@@ -17,7 +17,7 @@
     "portfolio",
     "biswajit panday"
   ],
-  "author": "Biswajit Panday",
+  "author": "Niloy Kumar Barman Panday",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

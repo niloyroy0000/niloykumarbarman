@@ -33,7 +33,7 @@ export default function AIChatbot() {
     {
       id: "welcome",
       role: "assistant",
-      content: "Hi! I'm Biswajit's AI assistant. Ask me about his projects, skills, or experience!",
+      content: "Hi! I'm Niloy Kumar Barman's AI assistant. Ask me about his projects, skills, or experience!",
       timestamp: new Date()
     }
   ]);
@@ -176,7 +176,7 @@ export default function AIChatbot() {
       const chatErrorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: `Sorry, I encountered an error: ${errMsg}. Please try again or contact Biswajit directly through the contact form.`,
+        content: `Sorry, I encountered an error: ${errMsg}. Please try again or contact Niloy Kumar Barman directly through the contact form.`,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, chatErrorMessage]);
@@ -215,7 +215,7 @@ export default function AIChatbot() {
     setMessages([{
       id: "welcome",
       role: "assistant",
-      content: "Hi! I'm Biswajit's AI assistant. Ask me about his projects, skills, or experience!",
+      content: "Hi! I'm Niloy Kumar Barman's AI assistant. Ask me about his projects, skills, or experience!",
       timestamp: new Date()
     }]);
     setError(null);
@@ -320,7 +320,7 @@ export default function AIChatbot() {
                   <FaRobot className="text-purple-400 text-lg sm:text-xl" aria-hidden="true" />
                 </div>
                 <div>
-                  <h3 id={chatTitleId} className="font-bold text-sm bg-gradient-to-r from-purple-400 to-secondary-default bg-clip-text text-transparent">Biswajit&apos;s AI Assistant</h3>
+                  <h3 id={chatTitleId} className="font-bold text-sm bg-gradient-to-r from-purple-400 to-secondary-default bg-clip-text text-transparent">Niloy Kumar Barman&apos;s AI Assistant</h3>
                   <p id={chatDescId} className="text-[10px] sm:text-xs text-white/60">Online - Ask about projects, skills, or experience</p>
                 </div>
               </div>
@@ -399,7 +399,7 @@ export default function AIChatbot() {
                       value={inputMessage}
                       onChange={(e) => setInputMessage(e.target.value)}
                       onKeyDown={handleKeyDown}
-                      placeholder="Ask about Biswajit's work..."
+                      placeholder="Ask about Niloy Kumar Barman's work..."
                       className="flex-1 bg-white/5 border border-purple-500/30 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 focus:border-purple-500/50 transition-all max-h-24 overflow-y-auto hide-scrollbar placeholder:text-white/40"
                       rows={1}
                       maxLength={500}

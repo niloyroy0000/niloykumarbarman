@@ -12,7 +12,7 @@ interface SocialPreviewProps {
 }
 
 const SocialPreviewGenerator = ({
-  title = "Biswajit Panday - Full-Stack .NET Developer & Cloud Solutions Expert",
+  title = "Niloy Kumar Barman Panday - Full-Stack .NET Developer & Cloud Solutions Expert",
   description = "Expert Full-Stack .NET Developer with 10+ years experience. Specializing in scalable applications, cloud solutions with .NET, React, Azure & AWS. Microsoft Certified.",
   image = "https://biswajitpanday.github.io/assets/profile/profile-large.webp",
   url = "https://biswajitpanday.github.io",

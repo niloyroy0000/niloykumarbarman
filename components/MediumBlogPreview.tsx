@@ -56,7 +56,7 @@ const MediumBlogPreview: React.FC<MediumBlogPreviewProps> = ({ maxPosts = 3 }) =
               title: post.title,
               link: post.externalUrl || '',
               pubDate: post.publishedDate,
-              author: post.author?.name || 'Biswajit Panday',
+              author: post.author?.name || 'Niloy Kumar Barman Panday',
               categories: post.tags || [],
               excerpt: post.excerpt,
               thumbnail: post.coverImage,

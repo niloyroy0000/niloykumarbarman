@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Contact Me",
-  description: "Get in touch with Biswajit Panday for professional inquiries, collaboration opportunities, or to discuss your project needs. Contact via email, phone, or form.",
+  description: "Get in touch with Niloy Kumar Barman Panday for professional inquiries, collaboration opportunities, or to discuss your project needs. Contact via email, phone, or form.",
   keywords: [
     "Contact",
     "Get in touch",
@@ -14,12 +14,12 @@ export const metadata: Metadata = {
     "Dhaka Bangladesh"
   ],
   openGraph: {
-    title: "Contact Biswajit Panday - Full-Stack Developer",
+    title: "Contact Niloy Kumar Barman Panday - Full-Stack Developer",
     description: "Get in touch for project inquiries, consultations, or collaboration opportunities",
     url: "https://biswajitpanday.github.io/contact",
   },
   twitter: {
-    title: "Contact Biswajit Panday - Full-Stack Developer",
+    title: "Contact Niloy Kumar Barman Panday - Full-Stack Developer",
     description: "Get in touch for project inquiries, consultations, or collaboration opportunities",
   },
 };

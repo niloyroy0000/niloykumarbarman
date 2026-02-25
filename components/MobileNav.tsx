@@ -310,7 +310,7 @@ export default function MobileNav({
               
               <div className="mt-8 mb-4 text-center">
                 <p className="text-xs text-white/40">
-                  © {new Date().getFullYear()} Biswajit Panday
+                  © {new Date().getFullYear()} Niloy Kumar Barman Panday
                 </p>
               </div>
             </motion.div>

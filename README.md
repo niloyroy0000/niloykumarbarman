@@ -364,9 +364,9 @@ This project is open source and available under the [MIT License](LICENSE).
 ## 📞 Contact
 
 - **Email**: biswajitmailid@gmail.com
-- **LinkedIn**: [Biswajit Panday](https://linkedin.com/in/biswajitpanday)
+- **LinkedIn**: [Niloy Kumar Barman Panday](https://linkedin.com/in/biswajitpanday)
 - **GitHub**: [biswajitpanday](https://github.com/biswajitpanday)
 
 ---
 
-Built with ❤️ by Biswajit Panday
+Built with ❤️ by Niloy Kumar Barman Panday
