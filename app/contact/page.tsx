@@ -106,16 +106,16 @@ const validateForm = (data: FormData) => {
 
 // Fallback default values (used if API fails or data is not available)
 const DEFAULT_CONTACT_INFO = {
-  phone: "+880 1681642502",
-  email: "biswajitmailid@gmail.com",
-  teams: "biswajitpanday@live.com",
+  phone: "+880 01766644823",
+  email: "niloybarman829@gmail.com",
+  teams: "niloybarman829@gmail.com",
   location: "Dhaka, Bangladesh",
 };
 
 const DEFAULT_SOCIAL_LINKS = {
-  linkedin: "https://linkedin.com/in/biswajitpanday",
-  github: "https://github.com/biswajitpanday",
-  medium: "https://medium.com/@biswajitpanday",
+  linkedin: "https://www.linkedin.com/in/niloy-barman-552634339/",
+  github: "https://github.com/niloyroy0000",
+  medium: "https://github.com/niloyroy0000",
 };
 
 const Contact = () => {

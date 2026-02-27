@@ -21,69 +21,123 @@ interface MediumBlogPreviewProps {
   maxPosts?: number;
 }
 
+const MEDIUM_PROFILE_URL = "https://medium.com/@niloykumarbarman";
+const DEFAULT_AUTHOR_NAME = "Niloy Kumar Barman";
+
+// GitHub Pages detect
+function isGitHubPages(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.location.hostname.endsWith("github.io");
+}
+
+// Works for both local & GitHub Pages (handles basePath)
+function withBasePath(path: string): string {
+  if (!path.startsWith("/")) path = `/${path}`;
+
+  // If you set <base href="/my-portfolio/"> in future, this also works
+  if (typeof window !== "undefined") {
+    const base = document.querySelector("base")?.getAttribute("href") || "/";
+    const cleanBase = base.endsWith("/") ? base.slice(0, -1) : base;
+
+    // "/" => no basePath
+    if (cleanBase && cleanBase !== "/") return `${cleanBase}${path}`.replace(/\/{2,}/g, "/");
+  }
+
+  // Next.js basePath (optional if you use next.config basePath)
+  const envBase = process.env.NEXT_PUBLIC_BASE_PATH || "";
+  if (envBase) return `${envBase}${path}`.replace(/\/{2,}/g, "/");
+
+  return path;
+}
+
 const MediumBlogPreview: React.FC<MediumBlogPreviewProps> = ({ maxPosts = 3 }) => {
   const [posts, setPosts] = useState<MediumPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
+
+    async function loadFromStatic() {
+      const res = await fetch(withBasePath("/data/medium-posts.json"), { cache: "no-store" });
+      if (!res.ok) throw new Error("Failed to load /data/medium-posts.json");
+      const data: MediumPost[] = await res.json();
+      return (data || []).slice(0, maxPosts);
+    }
+
     async function fetchPosts() {
       try {
-        // Try fetching from API first
-        const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://portfolio-admin-blue.vercel.app';
+        setLoading(true);
+        setError(null);
+
+        // GitHub Pages -> only static file (avoid CORS)
+        if (isGitHubPages()) {
+          const staticPosts = await loadFromStatic();
+          if (!cancelled) setPosts(staticPosts);
+          return;
+        }
+
+        // Normal hosting/local -> try API then fallback to static
+        const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://portfolio-admin-blue.vercel.app";
         let response = await fetch(`${API_URL}/api/public/blog?source=medium&limit=${maxPosts}`);
 
         if (!response.ok) {
-          // Fallback to static JSON file
-          console.warn('API fetch failed, falling back to static file');
-          response = await fetch('/data/medium-posts.json');
+          console.warn("API fetch failed, falling back to static file");
+          const staticPosts = await loadFromStatic();
+          if (!cancelled) setPosts(staticPosts);
+          return;
+        }
 
-          if (!response.ok) {
-            throw new Error('Failed to fetch blog posts from both API and static file');
-          }
+        const apiData = await response.json();
 
-          // Static file format
-          const data: MediumPost[] = await response.json();
-          setPosts(data.slice(0, maxPosts));
+        if (apiData?.success && Array.isArray(apiData?.data)) {
+          const transformedPosts: MediumPost[] = apiData.data.map((post: any) => ({
+            id: post.externalId || post._id || post.id || crypto.randomUUID?.() || String(Math.random()),
+            title: post.title || "Untitled",
+            link: post.externalUrl || post.link || "",
+            pubDate: post.publishedDate || post.pubDate || new Date().toISOString(),
+            author: post.author?.name || DEFAULT_AUTHOR_NAME,
+            categories: Array.isArray(post.tags) ? post.tags : [],
+            excerpt: post.excerpt || "",
+            thumbnail: post.coverImage,
+            readTime: typeof post.readTime === "number" ? post.readTime : 5,
+          }));
+
+          if (!cancelled) setPosts(transformedPosts.slice(0, maxPosts));
         } else {
-          // API response format
-          const apiData = await response.json();
-
-          if (apiData.success && Array.isArray(apiData.data)) {
-            // Transform API response to component format
-            const transformedPosts: MediumPost[] = apiData.data.map((post: any) => ({
-              id: post.externalId || post._id,
-              title: post.title,
-              link: post.externalUrl || '',
-              pubDate: post.publishedDate,
-              author: post.author?.name || 'Biswajit Panday',
-              categories: post.tags || [],
-              excerpt: post.excerpt,
-              thumbnail: post.coverImage,
-              readTime: post.readTime,
-            }));
-            setPosts(transformedPosts.slice(0, maxPosts));
-          } else {
-            throw new Error('Invalid API response format');
-          }
+          // Invalid API response -> fallback static
+          console.warn("Invalid API response, falling back to static file");
+          const staticPosts = await loadFromStatic();
+          if (!cancelled) setPosts(staticPosts);
         }
       } catch (err) {
-        console.error('Error loading Medium posts:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load posts');
+        console.error("Error loading Medium posts:", err);
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Failed to load posts");
+          setPosts([]);
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
 
     fetchPosts();
+
+    return () => {
+      cancelled = true;
+    };
   }, [maxPosts]);
 
   const formatDate = (dateString: string) => {
-    return new Intl.DateTimeFormat("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric"
-    }).format(new Date(dateString));
+    try {
+      return new Intl.DateTimeFormat("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }).format(new Date(dateString));
+    } catch {
+      return dateString;
+    }
   };
 
   if (loading) {
@@ -118,13 +172,15 @@ const MediumBlogPreview: React.FC<MediumBlogPreviewProps> = ({ maxPosts = 3 }) =
         <div className="flex items-center justify-between mb-8">
           <div>
             <h2 className="text-2xl font-bold text-white/90 mb-2">Latest Articles</h2>
-            <p className="text-sm text-white/60">Thoughts on full-stack development, AI, and cloud architecture</p>
+            <p className="text-sm text-white/60">
+              Thoughts on full-stack development, AI, and cloud architecture
+            </p>
           </div>
         </div>
         <div className="bg-gray-900/50 border border-yellow-500/30 rounded-xl p-8 text-center">
           <p className="text-yellow-400/80 mb-4">Unable to load recent articles</p>
           <Link
-            href="https://medium.com/@biswajitpanday"
+            href={MEDIUM_PROFILE_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-secondary-default hover:text-secondary-default/80 transition-colors"
@@ -144,13 +200,15 @@ const MediumBlogPreview: React.FC<MediumBlogPreviewProps> = ({ maxPosts = 3 }) =
         <div className="flex items-center justify-between mb-8">
           <div>
             <h2 className="text-2xl font-bold text-white/90 mb-2">Latest Articles</h2>
-            <p className="text-sm text-white/60">Thoughts on full-stack development, AI, and cloud architecture</p>
+            <p className="text-sm text-white/60">
+              Thoughts on full-stack development, AI, and cloud architecture
+            </p>
           </div>
         </div>
         <div className="bg-gray-900/50 border border-secondary-default/20 rounded-xl p-8 text-center">
           <p className="text-white/60 mb-4">No articles published yet. Stay tuned!</p>
           <Link
-            href="https://medium.com/@biswajitpanday"
+            href={MEDIUM_PROFILE_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-secondary-default hover:text-secondary-default/80 transition-colors"
@@ -172,10 +230,12 @@ const MediumBlogPreview: React.FC<MediumBlogPreviewProps> = ({ maxPosts = 3 }) =
           <h2 className="text-2xl font-bold bg-gradient-to-r from-[#00BFFF] to-[#0080FF] bg-clip-text text-transparent mb-2">
             Latest Articles
           </h2>
-          <p className="text-sm text-white/60">Thoughts on full-stack development, AI, and cloud architecture</p>
+          <p className="text-sm text-white/60">
+            Thoughts on full-stack development, AI, and cloud architecture
+          </p>
         </div>
         <Link
-          href="https://medium.com/@biswajitpanday"
+          href={MEDIUM_PROFILE_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-secondary-default/10 to-purple-500/10 hover:from-secondary-default/20 hover:to-purple-500/20 border border-secondary-default/30 hover:border-secondary-default/50 rounded-lg transition-all duration-300 text-sm text-secondary-default font-medium group"
@@ -196,12 +256,7 @@ const MediumBlogPreview: React.FC<MediumBlogPreviewProps> = ({ maxPosts = 3 }) =
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: index * 0.1 }}
           >
-            <Link
-              href={post.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group block h-full"
-            >
+            <Link href={post.link} target="_blank" rel="noopener noreferrer" className="group block h-full">
               <div className="relative bg-gray-900/50 border border-secondary-default/20 rounded-xl overflow-hidden hover:border-secondary-default/40 transition-all duration-300 p-6 h-full flex flex-col">
                 {/* External Link Badge */}
                 <div className="flex items-center gap-2 mb-3">

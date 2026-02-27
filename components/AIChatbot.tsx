@@ -24,7 +24,18 @@ interface Message {
   timestamp: Date;
 }
 
-const AI_API_ENDPOINT = process.env.NEXT_PUBLIC_CHATBOT_API_URL || '';
+/**
+ * ✅ Permanent endpoint resolver
+ * - env থাকলে: trailing slash কাটবে ("/" remove)
+ * - env না থাকলে: "/api/chat"
+ * - কখনো "/api/chat/" হবে না
+ */
+const RAW_ENDPOINT = (process.env.NEXT_PUBLIC_CHATBOT_API_URL || "").trim().replace(/\/+$/, "");
+
+const AI_API_ENDPOINT =
+  RAW_ENDPOINT && /^https?:\/\//i.test(RAW_ENDPOINT)
+    ? RAW_ENDPOINT
+    : "/api/chat";
 
 export default function AIChatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,7 +44,7 @@ export default function AIChatbot() {
     {
       id: "welcome",
       role: "assistant",
-      content: "Hi! I'm Biswajit's AI assistant. Ask me about his projects, skills, or experience!",
+      content: "Hi! I'm Niloy's AI assistant. Ask me about his projects, skills, or experience!",
       timestamp: new Date()
     }
   ]);
@@ -41,7 +52,7 @@ export default function AIChatbot() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [conversationStartTime, setConversationStartTime] = useState<number>(Date.now());
-  const [sessionId, setSessionId] = useState<string>('');
+  const [sessionId, setSessionId] = useState<string>("");
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -75,9 +86,7 @@ export default function AIChatbot() {
   useEffect(() => {
     const textarea = inputRef.current;
     if (textarea) {
-      // Reset height to auto to get correct scrollHeight
-      textarea.style.height = 'auto';
-      // Set height to scrollHeight, max 96px (max-h-24 = 6rem = 96px)
+      textarea.style.height = "auto";
       const newHeight = Math.min(textarea.scrollHeight, 96);
       textarea.style.height = `${newHeight}px`;
     }
@@ -86,15 +95,26 @@ export default function AIChatbot() {
   // Initialize or retrieve session ID from localStorage
   useEffect(() => {
     const getOrCreateSessionId = () => {
-      let sid = localStorage.getItem('chatbot-session-id');
+      let sid = localStorage.getItem("chatbot-session-id");
       if (!sid) {
         sid = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        localStorage.setItem('chatbot-session-id', sid);
+        localStorage.setItem("chatbot-session-id", sid);
       }
       return sid;
     };
     setSessionId(getOrCreateSessionId());
   }, []);
+
+  // Helper: safely read JSON even if server returns HTML
+  const safeReadJson = async (res: Response) => {
+    const ct = res.headers.get("content-type") || "";
+    if (ct.includes("application/json")) {
+      return res.json().catch(() => ({}));
+    }
+    // fallback: text
+    const text = await res.text().catch(() => "");
+    return { __rawText: text };
+  };
 
   // Send message to AI
   const sendMessage = async (messageText: string) => {
@@ -110,23 +130,26 @@ export default function AIChatbot() {
       timestamp: new Date()
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    // ✅ ensure history includes this user message
+    const nextMessages = [...messages, userMessage];
+
+    setMessages(nextMessages);
     setInputMessage("");
     setIsLoading(true);
     setError(null);
 
     try {
       // Build conversation history (last 4 messages) with timestamps
-      const conversationHistory = messages.slice(-4).map(msg => ({
+      const conversationHistory = nextMessages.slice(-4).map(msg => ({
         role: msg.role,
         content: msg.content,
         timestamp: msg.timestamp.toISOString()
       }));
 
       const response = await fetch(AI_API_ENDPOINT, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           message: messageText.trim(),
@@ -141,30 +164,35 @@ export default function AIChatbot() {
         })
       });
 
+      const data = await safeReadJson(response);
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        // try best error message
+        const serverErr =
+          (data && (data.error || data.message)) ||
+          (data && data.__rawText && "Server returned non-JSON response") ||
+          "Failed to get response";
 
         if (response.status === 429) {
-          throw new Error(errorData.error || 'Too many requests. Please wait a minute.');
+          throw new Error(serverErr || "Too many requests. Please wait a minute.");
         }
 
-        throw new Error(errorData.error || 'Failed to get response');
+        throw new Error(serverErr);
       }
 
-      const data = await response.json();
-
+      // ✅ match API response shape: { message, timestamp }
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: data.message,
-        timestamp: new Date(data.timestamp || new Date())
+        content: (data?.message ?? "").toString() || "Sorry, I couldn't generate a response.",
+        timestamp: new Date(data?.timestamp || new Date())
       };
 
       setMessages(prev => [...prev, assistantMessage]);
     } catch (err: unknown) {
-      console.error('Chatbot error:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Sorry, I encountered an error. Please try again.';
-      const errorType = err instanceof Error ? err.name : 'UnknownError';
+      console.error("Chatbot error:", err);
+      const errorMessage = err instanceof Error ? err.message : "Sorry, I encountered an error. Please try again.";
+      const errorType = err instanceof Error ? err.name : "UnknownError";
 
       // Track error
       trackChatbotError(errorType, errorMessage);
@@ -172,11 +200,11 @@ export default function AIChatbot() {
       setError(errorMessage);
 
       // Add error message to chat
-      const errMsg = err instanceof Error ? err.message : 'Unknown error';
+      const errMsg = err instanceof Error ? err.message : "Unknown error";
       const chatErrorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: `Sorry, I encountered an error: ${errMsg}. Please try again or contact Biswajit directly through the contact form.`,
+        content: `Sorry, I encountered an error: ${errMsg}. Please try again or contact Niloy directly through the contact form.`,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, chatErrorMessage]);
@@ -193,14 +221,13 @@ export default function AIChatbot() {
 
   // Handle suggested question click
   const handleSuggestedQuestion = (question: string) => {
-    // Track suggested question click
     trackChatbotSuggestedQuestion(question);
     sendMessage(question);
   };
 
   // Handle Enter key (without Shift)
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(e);
     }
@@ -208,24 +235,23 @@ export default function AIChatbot() {
 
   // Clear conversation
   const clearConversation = () => {
-    // Track conversation clear (exclude welcome message)
-    const userMessagesCount = messages.filter(m => m.role === 'user').length;
+    const userMessagesCount = messages.filter(m => m.role === "user").length;
     trackChatbotClear(userMessagesCount);
 
-    setMessages([{
-      id: "welcome",
-      role: "assistant",
-      content: "Hi! I'm Biswajit's AI assistant. Ask me about his projects, skills, or experience!",
-      timestamp: new Date()
-    }]);
+    setMessages([
+      {
+        id: "welcome",
+        role: "assistant",
+        content: "Hi! I'm Niloy's AI assistant. Ask me about his projects, skills, or experience!",
+        timestamp: new Date()
+      }
+    ]);
     setError(null);
 
-    // Reset conversation timer
     setConversationStartTime(Date.now());
 
-    // Generate new session ID for fresh conversation
     const newSessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    localStorage.setItem('chatbot-session-id', newSessionId);
+    localStorage.setItem("chatbot-session-id", newSessionId);
     setSessionId(newSessionId);
   };
 
@@ -237,8 +263,7 @@ export default function AIChatbot() {
   };
 
   const handleClose = () => {
-    // Track conversation end with metrics
-    const userMessagesCount = messages.filter(m => m.role === 'user').length;
+    const userMessagesCount = messages.filter(m => m.role === "user").length;
     const durationSeconds = Math.floor((Date.now() - conversationStartTime) / 1000);
 
     if (userMessagesCount > 0) {
@@ -257,21 +282,19 @@ export default function AIChatbot() {
   // Handle Escape key to close chat
   useEffect(() => {
     const handleEscapeKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isOpen) {
+      if (event.key === "Escape" && isOpen) {
         handleClose();
       }
     };
 
-    document.addEventListener('keydown', handleEscapeKey);
-    return () => document.removeEventListener('keydown', handleEscapeKey);
+    document.addEventListener("keydown", handleEscapeKey);
+    return () => document.removeEventListener("keydown", handleEscapeKey);
   }, [isOpen, messages, conversationStartTime]);
 
   return (
     <>
-      {/* Chat Indicator - Animated arrow and tooltip pointing to chat icon */}
       <ChatIndicator isVisible={!isOpen} />
 
-      {/* Floating Button (when chat is closed) - Fixed position */}
       <div className="fixed bottom-6 right-6 z-[9999]">
         <AnimatePresence>
           {!isOpen && (
@@ -286,15 +309,12 @@ export default function AIChatbot() {
               aria-label="Open AI chatbot assistant"
             >
               <FaRobot className="text-2xl group-hover:scale-110 transition-transform" aria-hidden="true" />
-
-              {/* Pulse animation ring */}
               <span className="absolute inset-0 rounded-full bg-purple-500/30 animate-ping" aria-hidden="true" />
             </motion.button>
           )}
         </AnimatePresence>
       </div>
 
-      {/* Chat Window - Responsive positioning */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -309,24 +329,26 @@ export default function AIChatbot() {
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
             className={`fixed z-[9999] bg-gradient-to-br from-[#1a1a2e] via-[#16162a] to-[#0f0f1a] border border-purple-500/20 rounded-xl shadow-2xl shadow-purple-500/10 ${
               isMinimized
-                ? 'bottom-6 right-6 w-80 h-14'
-                : 'bottom-4 right-4 left-4 sm:left-auto sm:w-[400px] h-[85vh] sm:h-[600px] max-h-[700px]'
+                ? "bottom-6 right-6 w-80 h-14"
+                : "bottom-4 right-4 left-4 sm:left-auto sm:w-[400px] h-[85vh] sm:h-[600px] max-h-[700px]"
             } flex flex-col overflow-hidden`}
           >
-            {/* Header with gradient */}
             <div className="bg-gradient-to-r from-purple-500/20 via-secondary-default/20 to-blue-500/20 border-b border-purple-500/20 p-3 sm:p-4 flex items-center justify-between backdrop-blur-sm">
               <div className="flex items-center gap-2 sm:gap-3">
                 <div className="p-2 bg-gradient-to-br from-purple-500/30 to-secondary-default/30 rounded-lg">
                   <FaRobot className="text-purple-400 text-lg sm:text-xl" aria-hidden="true" />
                 </div>
                 <div>
-                  <h3 id={chatTitleId} className="font-bold text-sm bg-gradient-to-r from-purple-400 to-secondary-default bg-clip-text text-transparent">Biswajit&apos;s AI Assistant</h3>
-                  <p id={chatDescId} className="text-[10px] sm:text-xs text-white/60">Online - Ask about projects, skills, or experience</p>
+                  <h3 id={chatTitleId} className="font-bold text-sm bg-gradient-to-r from-purple-400 to-secondary-default bg-clip-text text-transparent">
+                    Niloy&apos;s AI Assistant
+                  </h3>
+                  <p id={chatDescId} className="text-[10px] sm:text-xs text-white/60">
+                    Online - Ask about projects, skills, or experience
+                  </p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
-                {/* Minimize button */}
                 <button
                   onClick={handleMinimize}
                   className="hover:bg-white/10 p-1.5 rounded transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
@@ -335,7 +357,6 @@ export default function AIChatbot() {
                   <FaMinus className="text-sm" aria-hidden="true" />
                 </button>
 
-                {/* Close button */}
                 <button
                   ref={closeButtonRef}
                   onClick={handleClose}
@@ -347,7 +368,6 @@ export default function AIChatbot() {
               </div>
             </div>
 
-            {/* Messages Area */}
             {!isMinimized && (
               <>
                 <div
@@ -356,17 +376,16 @@ export default function AIChatbot() {
                   aria-live="polite"
                   aria-label="Chat messages"
                 >
-                  {messages.map((message) => (
+                  {messages.map(message => (
                     <ChatMessage key={message.id} message={message} />
                   ))}
 
-                  {/* Loading indicator */}
                   {isLoading && (
                     <div className="flex items-center gap-2 text-white/60 text-sm" role="status" aria-label="Generating response">
                       <div className="flex gap-1" aria-hidden="true">
-                        <span className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                        <span className="w-2 h-2 bg-secondary-default rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                        <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                        <span className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                        <span className="w-2 h-2 bg-secondary-default rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                        <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
                       </div>
                       <span className="bg-gradient-to-r from-purple-400 to-secondary-default bg-clip-text text-transparent">Thinking...</span>
                     </div>
@@ -375,19 +394,14 @@ export default function AIChatbot() {
                   <div ref={messagesEndRef} />
                 </div>
 
-                {/* Suggested Questions (only show at start) */}
-                {messages.length <= 1 && (
-                  <SuggestedQuestions onSelect={handleSuggestedQuestion} />
-                )}
+                {messages.length <= 1 && <SuggestedQuestions onSelect={handleSuggestedQuestion} />}
 
-                {/* Error Message */}
                 {error && (
                   <div role="alert" className="px-4 py-2 bg-red-500/10 border-t border-red-500/20 text-red-400 text-sm">
                     {error}
                   </div>
                 )}
 
-                {/* Input Area */}
                 <form onSubmit={handleSubmit} className="border-t border-purple-500/20 p-3 sm:p-4 bg-gradient-to-t from-purple-500/5 to-transparent">
                   <label htmlFor={inputLabelId} className="sr-only">
                     Type your message to the AI assistant
@@ -397,9 +411,9 @@ export default function AIChatbot() {
                       id={inputLabelId}
                       ref={inputRef}
                       value={inputMessage}
-                      onChange={(e) => setInputMessage(e.target.value)}
+                      onChange={e => setInputMessage(e.target.value)}
                       onKeyDown={handleKeyDown}
-                      placeholder="Ask about Biswajit's work..."
+                      placeholder="Ask about Niloy's work..."
                       className="flex-1 bg-white/5 border border-purple-500/30 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 focus:border-purple-500/50 transition-all max-h-24 overflow-y-auto hide-scrollbar placeholder:text-white/40"
                       rows={1}
                       maxLength={500}
