@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Career Journey",
-  description: "Explore Biswajit Panday's professional journey as a software developer, from early career to senior roles. Highlights of key projects and career milestones.",
+  description: "Explore Niloy Kumar Barman Panday's professional journey as a software developer, from early career to senior roles. Highlights of key projects and career milestones.",
   keywords: [
     "Career Journey", 
     "Professional Growth", 
@@ -14,12 +14,12 @@ export const metadata: Metadata = {
     "Career Development"
   ],
   openGraph: {
-    title: "Career Journey | Biswajit Panday",
+    title: "Career Journey | Niloy Kumar Barman Panday",
     description: "Explore my professional journey as a software developer, from early career to senior roles",
     url: "https://biswajitpanday.github.io/career",
   },
   twitter: {
-    title: "Career Journey | Biswajit Panday",
+    title: "Career Journey | Niloy Kumar Barman Panday",
     description: "Explore my professional journey as a software developer, from early career to senior roles",
   },
 };

@@ -11,12 +11,12 @@ export const metadata: Metadata = {
     "development showcase"
   ],
   openGraph: {
-    title: "Projects - Biswajit Panday's Work Showcase",
+    title: "Projects - Niloy Kumar Barman Panday's Work Showcase",
     description: "Explore innovative full-stack projects, .NET applications, React apps, and cloud solutions",
     url: "https://biswajitpanday.github.io/projects",
   },
   twitter: {
-    title: "Projects - Biswajit Panday's Work Showcase",
+    title: "Projects - Niloy Kumar Barman Panday's Work Showcase",
     description: "Explore innovative full-stack projects, .NET applications, React apps, and cloud solutions",
   },
 };

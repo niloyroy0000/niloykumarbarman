@@ -105,10 +105,33 @@ const MediumBlogPreview: React.FC<MediumBlogPreviewProps> = ({ maxPosts = 3 }) =
 
           if (!cancelled) setPosts(transformedPosts.slice(0, maxPosts));
         } else {
+<<<<<<< HEAD
           // Invalid API response -> fallback static
           console.warn("Invalid API response, falling back to static file");
           const staticPosts = await loadFromStatic();
           if (!cancelled) setPosts(staticPosts);
+=======
+          // API response format
+          const apiData = await response.json();
+
+          if (apiData.success && Array.isArray(apiData.data)) {
+            // Transform API response to component format
+            const transformedPosts: MediumPost[] = apiData.data.map((post: any) => ({
+              id: post.externalId || post._id,
+              title: post.title,
+              link: post.externalUrl || '',
+              pubDate: post.publishedDate,
+              author: post.author?.name || 'Niloy Kumar Barman Panday',
+              categories: post.tags || [],
+              excerpt: post.excerpt,
+              thumbnail: post.coverImage,
+              readTime: post.readTime,
+            }));
+            setPosts(transformedPosts.slice(0, maxPosts));
+          } else {
+            throw new Error('Invalid API response format');
+          }
+>>>>>>> 2a8a9e2e1edde7707d0bfc1fa9b2b3d15119ee9f
         }
       } catch (err) {
         console.error("Error loading Medium posts:", err);

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import type { NextConfig } from "next";
 import bundleAnalyzer from "@next/bundle-analyzer";
 
@@ -92,6 +93,8 @@ const nextConfig: NextConfig = {
             name: "markdown",
             priority: 25,
             enforce: true,
+=======
+>>>>>>> 2a8a9e2e1edde7707d0bfc1fa9b2b3d15119ee9f
           },
           vendor: {
             test: /[\\/]node_modules[\\/]/,

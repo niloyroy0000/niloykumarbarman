@@ -8,7 +8,7 @@ const baseUrl = 'https://biswajitpanday.github.io';
 export const personSchema = {
   "@context": "https://schema.org",
   "@type": "Person",
-  name: "Biswajit Panday",
+  name: "Niloy Kumar Barman Panday",
   jobTitle: "Senior .NET Architect & AI Solutions Engineer",
   description: "Senior .NET Architect with 10+ years delivering mid to enterprise grade applications. Currently at Optimizely serving global enterprise clients. Built SpireWiz achieving 80% efficiency gains, ~$180K annual value, and 600+ developer hours saved annually. Microsoft Certified.",
   url: baseUrl,
@@ -42,18 +42,18 @@ export const personSchema = {
 export const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "Biswajit Panday - Portfolio",
+  name: "Niloy Kumar Barman Panday - Portfolio",
   description: "Professional portfolio showcasing Full-Stack .NET development expertise, cloud solutions, and innovative projects.",
   url: baseUrl,
   author: {
     "@type": "Person",
-    name: "Biswajit Panday"
+    name: "Niloy Kumar Barman Panday"
   },
   inLanguage: "en-US",
   copyrightYear: new Date().getFullYear(),
   copyrightHolder: {
     "@type": "Person", 
-    name: "Biswajit Panday"
+    name: "Niloy Kumar Barman Panday"
   },
   logo: `${baseUrl}/assets/photo.webp`,
   potentialAction: {
@@ -67,12 +67,12 @@ export const websiteSchema = {
 export const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "ProfessionalService",
-  name: "Biswajit Panday - Full-Stack Development Services",
+  name: "Niloy Kumar Barman Panday - Full-Stack Development Services",
   description: "Professional Full-Stack .NET development services specializing in scalable web applications, cloud solutions, and modern development practices.",
   url: baseUrl,
   founder: {
     "@type": "Person",
-    name: "Biswajit Panday"
+    name: "Niloy Kumar Barman Panday"
   },
   serviceType: "Software Development",
   areaServed: "Worldwide",
@@ -118,7 +118,7 @@ export const generateWebPageSchema = (
   url: `${baseUrl}${path}`,
   isPartOf: {
     '@type': 'WebSite',
-    name: 'Biswajit Panday - Portfolio',
+    name: 'Niloy Kumar Barman Panday - Portfolio',
     url: baseUrl
   },
   image: images.length > 0 ? images : [`${baseUrl}/assets/photo.webp`]

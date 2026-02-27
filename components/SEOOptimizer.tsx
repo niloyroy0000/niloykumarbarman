@@ -10,7 +10,7 @@ const SEOOptimizer = () => {
     "@type": "ProfilePage",
     "mainEntity": {
       "@type": "Person",
-      "name": "Biswajit Panday",
+      "name": "Niloy Kumar Barman Panday",
       "jobTitle": "Full-Stack .NET Developer",
       "description": "Professional Full-Stack .NET Developer with 10+ years of experience specializing in scalable applications, cloud solutions with .NET, React, Azure & AWS.",
       "url": "https://biswajitpanday.github.io",
@@ -93,34 +93,34 @@ const SEOOptimizer = () => {
     "mainEntity": [
       {
         "@type": "Question",
-        "name": "What technologies does Biswajit Panday specialize in?",
+        "name": "What technologies does Niloy Kumar Barman Panday specialize in?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Biswajit specializes in .NET Core, React, TypeScript, Azure, AWS, SQL Server, MongoDB, and modern web development frameworks with over 10 years of experience."
+          "text": "Niloy Kumar Barman specializes in .NET Core, React, TypeScript, Azure, AWS, SQL Server, MongoDB, and modern web development frameworks with over 10 years of experience."
         }
       },
       {
         "@type": "Question",
-        "name": "What types of projects does Biswajit work on?",
+        "name": "What types of projects does Niloy Kumar Barman work on?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Biswajit works on full-stack web applications, cloud solutions, enterprise software, API development, database design, and DevOps implementations."
+          "text": "Niloy Kumar Barman works on full-stack web applications, cloud solutions, enterprise software, API development, database design, and DevOps implementations."
         }
       },
       {
         "@type": "Question",
-        "name": "Is Biswajit available for freelance projects?",
+        "name": "Is Niloy Kumar Barman available for freelance projects?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Yes, Biswajit is available for consulting and freelance projects. Contact through the portfolio website for project inquiries and collaboration opportunities."
+          "text": "Yes, Niloy Kumar Barman is available for consulting and freelance projects. Contact through the portfolio website for project inquiries and collaboration opportunities."
         }
       },
       {
         "@type": "Question",
-        "name": "What certifications does Biswajit hold?",
+        "name": "What certifications does Niloy Kumar Barman hold?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Biswajit holds Microsoft Azure Fundamentals certification and multiple professional development certifications in software development and cloud technologies."
+          "text": "Niloy Kumar Barman holds Microsoft Azure Fundamentals certification and multiple professional development certifications in software development and cloud technologies."
         }
       }
     ]
@@ -134,7 +134,7 @@ const SEOOptimizer = () => {
     "description": "Professional full-stack development services specializing in .NET, React, and cloud solutions",
     "provider": {
       "@type": "Person",
-      "name": "Biswajit Panday"
+      "name": "Niloy Kumar Barman Panday"
     },
     "areaServed": "Worldwide",
     "serviceType": [

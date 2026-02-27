@@ -28,7 +28,7 @@ export const PersonSchema = () => {
   const personData = {
     "@context": "https://schema.org",
     "@type": "Person",
-    name: "Biswajit Panday",
+    name: "Niloy Kumar Barman Panday",
     jobTitle: "Full-Stack .NET Developer",
     description: "Professional Full-Stack .NET Developer with 10+ years of experience specializing in scalable applications, cloud solutions with .NET, React, Azure & AWS.",
     url: "https://biswajitpanday.github.io",
@@ -70,18 +70,18 @@ export const WebSiteSchema = () => {
   const websiteData = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "Biswajit Panday - Portfolio",
+    name: "Niloy Kumar Barman Panday - Portfolio",
     description: "Professional portfolio showcasing Full-Stack .NET development expertise, cloud solutions, and innovative projects.",
     url: "https://biswajitpanday.github.io",
     author: {
       "@type": "Person",
-      name: "Biswajit Panday"
+      name: "Niloy Kumar Barman Panday"
     },
     inLanguage: "en-US",
     copyrightYear: new Date().getFullYear(),
     copyrightHolder: {
       "@type": "Person", 
-      name: "Biswajit Panday"
+      name: "Niloy Kumar Barman Panday"
     },
     logo: "https://biswajitpanday.github.io/assets/photo.webp",
     potentialAction: {
@@ -106,12 +106,12 @@ export const OrganizationSchema = () => {
   const organizationData = {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
-    name: "Biswajit Panday - Full-Stack Development Services",
+    name: "Niloy Kumar Barman Panday - Full-Stack Development Services",
     description: "Professional Full-Stack .NET development services specializing in scalable web applications, cloud solutions, and modern development practices.",
     url: "https://biswajitpanday.github.io",
     founder: {
       "@type": "Person",
-      name: "Biswajit Panday"
+      name: "Niloy Kumar Barman Panday"
     },
     serviceType: "Software Development",
     areaServed: "Worldwide",
@@ -168,7 +168,7 @@ export const generateWebPageSchema = (
   url: `https://biswajitpanday.github.io${path}`,
   isPartOf: {
     '@type': 'WebSite',
-    name: 'Biswajit Panday - Portfolio',
+    name: 'Niloy Kumar Barman Panday - Portfolio',
     url: 'https://biswajitpanday.github.io'
   },
   image: images.length > 0 ? images : ['https://biswajitpanday.github.io/assets/photo.webp']

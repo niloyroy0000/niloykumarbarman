@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     "LinkedIn Learning Certifications"
   ],
   openGraph: {
-    title: "Professional Certifications | Biswajit Panday",
+    title: "Professional Certifications | Niloy Kumar Barman Panday",
     description: "Explore my professional certifications, demonstrating expertise and commitment to continuous learning in software development and cloud technologies.",
     type: "website",
     url: "https://biswajitpanday.github.io/certifications",
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     ],
   },
   twitter: {
-    title: "Professional Certifications | Biswajit Panday",
+    title: "Professional Certifications | Niloy Kumar Barman Panday",
     description: "Explore my professional certifications and credentials in software development and cloud technologies.",
   },
 };

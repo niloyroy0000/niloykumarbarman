@@ -202,9 +202,9 @@ export const ANIMATION_STRATEGY = {
 // SEO constants
 export const SEO = {
   DEFAULT_TITLE: "Panday's Portfolio",
-  DEFAULT_DESCRIPTION: "Portfolio of Biswajit Panday - Full-Stack .NET Developer",
+  DEFAULT_DESCRIPTION: "Portfolio of Niloy Kumar Barman Panday - Full-Stack .NET Developer",
   SITE_URL: "https://biswajitpanday.github.io",
-  AUTHOR: "Biswajit Panday",
+  AUTHOR: "Niloy Kumar Barman Panday",
 } as const;
 
 // Social media links
